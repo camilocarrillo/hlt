@@ -8,7 +8,7 @@ do
     for i in `cat $j`
     do 
 	echo "starting $i in $j"
-	~/hlt/scripts/execute_folder.sh $i > output.$i.txt &
+	~/hlt/scripts/execute_folder.sh $i > output.$i.txt
 	echo "finishing $i in $j"
     done
     echo "sleeping 30s"
