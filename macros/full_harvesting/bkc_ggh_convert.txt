@@ -1,0 +1,5 @@
+cat full_harvesting/higgs_hlt10.C | sed -e "s|tth->Draw|//tth->Draw|g" -e "s|wzh->Draw|//wzh->Draw|g" -e "s|vbf->Draw|//vbf->Draw|g" | grep -v "tth" | grep -v "wzh" | grep -v "vbf" > ggh_higgs_hlt10.C
+cat full_harvesting/higgs_hlt21.C | sed -e "s|tth->Draw|//tth->Draw|g" -e "s|wzh->Draw|//wzh->Draw|g" -e "s|vbf->Draw|//vbf->Draw|g" > ggh_higgs_hlt21.C
+cat full_harvesting/higgs_hlt43.C | sed -e "s|tth->Draw|//tth->Draw|g" -e "s|wzh->Draw|//wzh->Draw|g" -e "s|vbf->Draw|//vbf->Draw|g" > ggh_higgs_hlt43.C
+cat full_harvesting/higgs_hlt65.C | sed -e "s|tth->Draw|//tth->Draw|g" -e "s|wzh->Draw|//wzh->Draw|g" -e "s|vbf->Draw|//vbf->Draw|g" > ggh_higgs_hlt65.C
+cat full_harvesting/higgs_hlt87.C | sed -e "s|tth->Draw|//tth->Draw|g" -e "s|wzh->Draw|//wzh->Draw|g" -e "s|vbf->Draw|//vbf->Draw|g" > ggh_higgs_hlt87.C
