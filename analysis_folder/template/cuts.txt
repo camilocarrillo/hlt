@@ -1,0 +1,87 @@
+double th_Lead;
+double th_SubLead;
+if(fabs(Diphoton_LeadEta)<1.4442) th_Lead = 0.014;
+if(fabs(Diphoton_LeadEta)>1.566&&fabs(Diphoton_LeadEta)<2.5) th_Lead=0.034;	
+if(fabs(Diphoton_SubLeadEta)<1.4442) th_SubLead = 0.014;
+if(fabs(Diphoton_SubLeadEta)>1.566&&fabs(Diphoton_SubLeadEta)<2.5) th_SubLead=0.034;	
+
+bool Leading_Iso = (Diphoton_LeadEcalIso03<5.0+0.012*Diphoton_LeadEt)
+                 &&(Diphoton_LeadHcalIso03<5.0+0.005*Diphoton_LeadEt)
+                 &&(Diphoton_LeadTrkIso03 <5.0+0.002*Diphoton_LeadEt);
+
+bool SubLeading_Iso = (Diphoton_SubLeadEcalIso03<5.0+0.012*Diphoton_SubLeadEt)
+                    &&(Diphoton_SubLeadHcalIso03<5.0+0.005*Diphoton_SubLeadEt)
+                    &&(Diphoton_SubLeadTrkIso03 <5.0+0.002*Diphoton_SubLeadEt);
+
+
+// bit_194_HLT_Photon26_R9Id85_OR_CaloId10_Iso50_Photon18_R9Id85_OR_CaloId10_Iso50_Mass60_v5
+bool minitree_bit194=Diphoton_Mass>60&&
+      Diphoton_LeadEt>26 && Diphoton_LeadHoE   <0.1&&(Diphoton_LeadR9   >0.85||(Diphoton_LeadSigIeIe   <th_Lead    && Leading_Iso))
+&&(Diphoton_SubLeadEt>18)&& Diphoton_SubLeadHoE<0.1&&(Diphoton_SubLeadR9>0.85||(Diphoton_SubLeadSigIeIe<th_SubLead && SubLeading_Iso));
+
+// bit_195_HLT_Photon26_R9Id85_OR_CaloId10_Iso50_Photon18_R9Id85_OR_CaloId10_Iso50_Mass70_v1
+bool minitree_bit195=Diphoton_Mass>70&&
+      Diphoton_LeadEt>26 && Diphoton_LeadHoE   <0.1&&(Diphoton_LeadR9   >0.85||(Diphoton_LeadSigIeIe   <th_Lead      && Leading_Iso))
+&&(Diphoton_SubLeadEt>18)&& Diphoton_SubLeadHoE<0.1&&(Diphoton_SubLeadR9>0.85||(Diphoton_SubLeadSigIeIe<th_SubLead && SubLeading_Iso));
+
+// bit_205_HLT_Photon36_R9Id85_OR_CaloId10_Iso50_Photon22_R9Id85_OR_CaloId10_Iso50_v5
+bool minitree_bit205=
+       (Diphoton_LeadEt>36)&& Diphoton_LeadHoE   <0.1&&(Diphoton_LeadR9    >0.85||(Diphoton_LeadSigIeIe   <th_Lead    && Leading_Iso))
+   &&(Diphoton_SubLeadEt>22)&& Diphoton_SubLeadHoE<0.1&&(Diphoton_SubLeadR9>0.85||(Diphoton_SubLeadSigIeIe<th_SubLead && SubLeading_Iso));
+   
+// Chris_paths from the slides HLT_Photon36_R9Id85_OR_CaloId24b40e_Iso50T80L_Photon18_AND_HE10_R9Id65_Mass95_v1
+
+if(fabs(Diphoton_LeadEta)<1.4442) th_Lead = 0.024;
+if(fabs(Diphoton_LeadEta)>1.566&&fabs(Diphoton_LeadEta)<2.5) th_Lead=0.040;	
+if(fabs(Diphoton_SubLeadEta)<1.4442) th_SubLead = 0.024;
+if(fabs(Diphoton_SubLeadEta)>1.566&&fabs(Diphoton_SubLeadEta)<2.5) th_SubLead=0.040;	
+
+bool rediscover_Leading_Iso    = (Diphoton_LeadEcalIso03<8.0+0.012*Diphoton_LeadEt) 
+     			      && (Diphoton_LeadHcalIso03<5.0+0.005*Diphoton_LeadEt);
+bool rediscover_SubLeading_Iso = (Diphoton_SubLeadEcalIso03<8.0+0.012*Diphoton_SubLeadEt)
+                              && (Diphoton_SubLeadHcalIso03<8.0+0.005*Diphoton_SubLeadEt)
+                              && (Diphoton_SubLeadTrkIso03 <8.0+0.002*Diphoton_SubLeadEt);	
+
+bool minitree_rediscover_resonant=Diphoton_Mass>95
+   	   &&Diphoton_LeadEt   >36 && Diphoton_LeadHoE   <0.1&&(Diphoton_LeadR9   >0.85||Diphoton_LeadSigIeIe<th_Lead       &&rediscover_Leading_Iso)
+           &&Diphoton_SubLeadEt>18 && Diphoton_SubLeadHoE<0.1&&(Diphoton_SubLeadR9>0.65||Diphoton_SubLeadSigIeIe<th_SubLead &&rediscover_SubLeading_Iso) ;
+	    
+
+//HLT_Photon42_R9Id85_OR_CaloId24b40e_Iso50T80L_Photon22_AND_HE10_R9Id65_v1
+bool minitree_rediscover_noresonant=
+     	     Diphoton_LeadEt   >42 && Diphoton_LeadHoE   <0.1&&(Diphoton_LeadR9   >0.85||Diphoton_LeadSigIeIe<th_Lead       &&rediscover_Leading_Iso) 
+           &&Diphoton_SubLeadEt>22 && Diphoton_SubLeadHoE<0.1&&(Diphoton_SubLeadR9>0.65||Diphoton_SubLeadSigIeIe<th_SubLead &&rediscover_SubLeading_Iso) ;
+
+bool minitree_rediscover_noresonant_lowleg=
+             Diphoton_LeadEt   >42 && Diphoton_LeadHoE   <0.1&&(Diphoton_LeadR9   >0.85||Diphoton_LeadSigIeIe<th_Lead       &&rediscover_Leading_Iso) 
+           && Diphoton_SubLeadHoE<0.1&&(Diphoton_SubLeadR9>0.65||Diphoton_SubLeadSigIeIe<th_SubLead &&rediscover_SubLeading_Iso) ;
+
+bool minitree_rediscover_noresonant_lead=
+     	     Diphoton_LeadHoE   <0.1&&(Diphoton_LeadR9   >0.85||Diphoton_LeadSigIeIe<th_Lead       &&rediscover_Leading_Iso) 
+             &&Diphoton_SubLeadEt>22 && Diphoton_SubLeadHoE<0.1&&(Diphoton_SubLeadR9>0.65||Diphoton_SubLeadSigIeIe<th_SubLead &&rediscover_SubLeading_Iso) ;
+
+
+bool preselection=
+       //Avoid Transition region
+       !((fabs(Diphoton_LeadEta)>1.4442&&fabs(Diphoton_LeadEta)<1.5660)||(fabs(Diphoton_SubLeadEta)>1.4442&&fabs(Diphoton_SubLeadEta)<1.5660))
+       
+       &&//Demand that both photons are gen-matched with real ones`
+       (Diphoton_LeadIsGenMatched>0 && Diphoton_SubLeadIsGenMatched>0)
+       
+       &&//Demand that both photons pass the MIT Precut_index
+        (Diphoton_LeadMITPre>0&&Diphoton_SubLeadMITPre>0);
+
+
+cut[0]=true; //all minitree level plots for reference, no cuts
+
+cut[1]=preselection; 
+cut[2]=cut[1]&&minitree_rediscover_noresonant_lead&&(Diphoton_LeadEt>40); 
+      
+cut[3]=preselection; 
+cut[4]=cut[3]&&minitree_rediscover_noresonant_lead&&(Diphoton_LeadEt>35); 
+      
+cut[5]=preselection; 
+cut[6]=cut[5]&&minitree_rediscover_noresonant_lead&&(Diphoton_LeadEt>30);
+      
+cut[7]=preselection;   
+cut[8]=cut[7]&&minitree_rediscover_noresonant_lead&&(Diphoton_LeadEt>25);

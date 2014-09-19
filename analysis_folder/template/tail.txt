@@ -1,0 +1,111 @@
+     /*
+     event_hlt_bit.bit24;
+     event_hlt_bit.bit25 
+     event_hlt_bit.bit35;
+     std::cout<<"cut2";
+     for(cut_index=0;cut_index<9  ;cut_index++) std::cout<<cut[cut_index]<<" ";
+     std::cout<<std::endl;
+     */
+     
+     for(cut_index=0;cut_index<9  ;cut_index++){ //Loop over the different histograms                                                               
+       if(cut[cut_index]){ //all hitograms below will be filled up if the boolean is true.                                                             
+	 cutflow->Fill(cut_index);
+	 phi1phi2[cut_index]->Fill(Diphoton_LeadPhi,Diphoton_SubLeadPhi);
+	 eta1eta2[cut_index]->Fill(Diphoton_LeadEta,Diphoton_SubLeadEta);
+	 pt1pt2[cut_index]->Fill(Diphoton_LeadEt,Diphoton_SubLeadEt);
+	 pt1pt2Norm[cut_index]->Fill(Diphoton_LeadEt/Diphoton_Mass,Diphoton_SubLeadEt/Diphoton_Mass);
+	 pt1pt2Zoom[cut_index]->Fill(Diphoton_LeadEt/Diphoton_Mass,Diphoton_SubLeadEt/Diphoton_Mass);
+	 wide_pt1pt2[cut_index]->Fill(Diphoton_LeadEt,Diphoton_SubLeadEt);
+	 higgsEta[cut_index]->Fill(Diphoton_Eta);
+	 higgsPhi[cut_index]->Fill(Diphoton_Phi);
+	 higgsP[cut_index]->Fill(Diphoton_PT);                                                                      
+	 higgsPt[cut_index]->Fill(Diphoton_PT);
+	 ptLead[cut_index]->Fill(Diphoton_LeadEt);
+	 ptTrail[cut_index]->Fill(Diphoton_SubLeadEt);
+	 ptLeadNorm[cut_index]->Fill(Diphoton_LeadEt/Diphoton_Mass);
+	 ptTrailNorm[cut_index]->Fill(Diphoton_SubLeadEt/Diphoton_Mass);
+	 massHiggshisto[cut_index]->Fill(Diphoton_Mass);
+	 massDiphotonhisto[cut_index]->Fill(Diphoton_Mass);
+	 
+	 diphoton_LeadR9[cut_index]->Fill(Diphoton_LeadR9);
+	 diphoton_SubLeadR9[cut_index]->Fill(Diphoton_SubLeadR9);
+	                                      
+	 diphoton_LeadTrkIso03[cut_index]->Fill(Diphoton_LeadTrkIso03);
+	 diphoton_SubLeadTrkIso03[cut_index]->Fill(Diphoton_LeadTrkIso03);
+	                                      
+	 diphoton_LeadHcalIso03[cut_index]->Fill(Diphoton_LeadHcalIso03);
+	 diphoton_SubLeadHcalIso03[cut_index]->Fill(Diphoton_SubLeadHcalIso03);
+
+	 diphoton_Leadpfiso02[cut_index]->Fill(Diphoton_Leadpfiso02);
+	 diphoton_SubLeadpfiso02[cut_index]->Fill(Diphoton_SubLeadpfiso02);
+	                                      
+       }
+     }
+     //jentry=nentries;
+   }
+
+   //endjob
+   
+   std::cout<<"beginning endJob"<<std::endl;
+   theFileOut->cd();
+   cutflow->Write();
+   for(cut_index=0;cut_index<9  ;cut_index++){ //Loop over the different histograms                                                                    
+     ptLead[cut_index]->Write();
+     ptTrail[cut_index]->Write();
+     ptLeadNorm[cut_index]->Write();
+     ptTrailNorm[cut_index]->Write();
+     massDiphotonhisto[cut_index]->Write();
+     massHiggshisto[cut_index]->Write();
+     higgsEta[cut_index]->Write();
+     higgsPhi[cut_index]->Write();
+     higgsP[cut_index]->Write();
+     higgsPt[cut_index]->Write();
+     phi1phi2[cut_index]->Write();
+     eta1eta2[cut_index]->Write();
+     pt1pt2[cut_index]->Write();
+     pt1pt2Norm[cut_index]->Write();
+     pt1pt2Zoom[cut_index]->Write();
+     wide_pt1pt2[cut_index]->Write();
+
+     diphoton_LeadR9[cut_index]->Write();
+     diphoton_SubLeadR9[cut_index]->Write();
+     diphoton_LeadHoE[cut_index]->Write();
+     diphoton_SubLeadHoE[cut_index]->Write();
+     diphoton_LeadTrkIso03[cut_index]->Write();
+     diphoton_SubLeadTrkIso03[cut_index]->Write();
+     diphoton_LeadHcalIso03[cut_index]->Write();
+     diphoton_SubLeadHcalIso03[cut_index]->Write();
+     diphoton_Leadpfiso02[cut_index]->Write();
+     diphoton_SubLeadpfiso02[cut_index]->Write();
+
+     ptLead[cut_index]->Delete();
+     ptTrail[cut_index]->Delete();
+     ptLeadNorm[cut_index]->Delete();
+     ptTrailNorm[cut_index]->Delete();
+     massDiphotonhisto[cut_index]->Delete();
+     massHiggshisto[cut_index]->Delete();
+     higgsEta[cut_index]->Delete();
+     higgsPhi[cut_index]->Delete();
+     higgsP[cut_index]->Delete();
+     higgsPt[cut_index]->Delete();
+     phi1phi2[cut_index]->Delete();
+     eta1eta2[cut_index]->Delete();
+     pt1pt2[cut_index]->Delete();
+     pt1pt2Norm[cut_index]->Delete();
+     pt1pt2Zoom[cut_index]->Delete();
+     wide_pt1pt2[cut_index]->Delete();
+
+     diphoton_LeadR9[cut_index]->Delete();
+     diphoton_SubLeadR9[cut_index]->Delete();
+     diphoton_LeadHoE[cut_index]->Delete();
+     diphoton_SubLeadHoE[cut_index]->Delete();
+     diphoton_LeadTrkIso03[cut_index]->Delete();
+     diphoton_SubLeadTrkIso03[cut_index]->Delete();
+     diphoton_LeadHcalIso03[cut_index]->Delete();
+     diphoton_SubLeadHcalIso03[cut_index]->Delete();
+     diphoton_Leadpfiso02[cut_index]->Delete();
+     diphoton_SubLeadpfiso02[cut_index]->Delete();
+   }
+   theFileOut->Close();
+}
+
