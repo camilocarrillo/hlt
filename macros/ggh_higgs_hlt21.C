@@ -202,7 +202,7 @@ void ggh_higgs_hlt21(){
   leg->SetFillColor(0);
   leg->Draw("same");
   
-  C1->SaveAs("summary21_0p7.png")
+  C1->SaveAs("summary21_0p7.png");
 
   exit(0);
 }
