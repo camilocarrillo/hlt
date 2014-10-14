@@ -15,6 +15,15 @@ do
     sleep 30s
 done
 
+sleep 15s
+echo "all execute jobs are finished?"
+ps aux | grep miloc | grep root | grep execute
+export jobs=`ps aux | grep miloc | grep root | grep execute | wc -l`
+echo "jobs running : $jobs"
+echo "if not please cancel this script (ctrl+c)"
+echo "and when finished continue from this line on"
+sleep 30s
+
 ~/hlt/scripts/hadds.sh ~/hlt/scripts/ggh_Diphoton8TeVForHLT.txt
 ~/hlt/scripts/ggh_harvesting.sh ~/hlt/scripts/ggh_Diphoton8TeVForHLT.txt
 rm matrix -rf

@@ -515,9 +515,9 @@ READING_DIPHOTON_TREE::READING_DIPHOTON_TREE(TTree *tree) : fChain(0)
 // used to generate this class and read the Tree.
 
    if (tree == 0) {
-     TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/home/miloc/mini_trees_3/-folder-/datastore/Higgs8TeVForHLT/-folder-/-file-");
+     TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/home/miloc/mini_trees_3/-folder-/-file-");
      if (!f || !f->IsOpen()) {
-       f = new TFile("/home/miloc/mini_trees_3/-folder-/datastore/Higgs8TeVForHLT/-folder-/-file-");
+       f = new TFile("/home/miloc/mini_trees_3/-folder-/-file-");
      }
      f->GetObject("DiPhotonTree",tree);
    }
