@@ -5,15 +5,185 @@
 #include <vector>
 #include <string>
 #include <TEfficiency.h>
-#include "TLegend"
-#include "<TGraphAsymmErrors.h>"
-
+#include <TLegend.h>
+#include <TFile.h>
+#include <TH1F.h>
+#include <TH2F.h>
+#include <TGraphAsymmErrors.h>
+#include "TStyle.h"
+#include "TCanvas.h"
 
 //#define Maxselection 1
 //#define Nhltpaths 442
 
+
+TCanvas * Ca0 = new TCanvas("Ca0","bit0",1200,800);
+
+void binomialEfficiency1D(TH1F * numerator,TH1F * denominator,string option){
+  //  TH1F * efficiency = numerator->Clone("efficiency");
+  TGraphAsymmErrors * efficiency =new TGraphAsymmErrors(numerator,denominator);
+  efficiency->SetTitle("Efficiency");
+  //efficiency->GetXaxis()->SetTitle(numerator->GetXaxis()->GetTitle());
+  efficiency->GetYaxis()->SetTitle("#epsilon");
+
+    
+  /*
+  for(int j=0;j<=numerator->GetXaxis()->GetNbins() ;j++){
+    if(denominator->GetBinContent(j)!=0){
+      float eff = numerator->GetBinContent(j)/denominator->GetBinContent(j);
+      float err = sqrt(eff*(1-eff)/denominator->GetBinContent(j));
+      //if(err==0.)continue;
+      efficiency->SetBinContent(j,eff);
+      efficiency->SetBinError(j,err);
+      //cout<<"1Deff "<<j<<" "<<eff<<" +/- "<<err<<endl;
+    }
+  }
+  */
+  
+  efficiency->Draw("AP");
+  efficiency->SetMarkerColor(kRed);
+  efficiency->SetMarkerStyle(23);
+  efficiency->SetMarkerSize(2);
+  if(option=="p") efficiency->GetXaxis()->SetRangeUser(0.,120.);
+  else if(option=="eta") efficiency->GetXaxis()->SetLimits(-5.,5.);
+  else if(option=="phi") efficiency->GetXaxis()->SetLimits(-3.1416,3.1416);
+  else if(option=="pn") efficiency->GetXaxis()->SetLimits(0.,1.);
+  else if(option=="m") efficiency->GetXaxis()->SetLimits(60.,180.);
+  
+  efficiency->GetYaxis()->SetRangeUser(0.,1.);
+
+  //efficiency->Delete();
+
+  //theFile->cd();
+  //efficiency->Write();
+}
+
+
+void Draw1D(string savedname,string theXtitle,TFile * theFile,int cut1, int cut2){
+
+  TLegend *leg = new TLegend(0.65,0.93,0.89,0.7);
+  
+  char char_cut1[20];
+  char char_cut2[20];
+
+  TH1F * histoArray[9  ];
+  
+  for(int selection=0;selection<9  ;selection++){ //Loop over the different histograms
+    //std::string histo = std::to_string(selection);
+    char histo[20];
+    sprintf(histo,"%d",selection);
+    //cout<<savedname+"_"+histo<<endl;
+    sprintf(char_cut1,"%d",cut1);
+    sprintf(char_cut2,"%d",cut2);
+    histoArray[selection] = (TH1F*)(theFile->Get((savedname+"_"+histo).c_str()));
+    if(selection==0){
+      histoArray[selection]->Draw();
+      histoArray[selection]->SetFillColor(kBlue);
+      leg->AddEntry(histoArray[selection],"minitree","f");
+    }else if(selection==1 && (cut1==1||cut2==1)){
+      histoArray[selection]->Draw("same");
+      histoArray[selection]->SetFillColor(kRed);
+      leg->AddEntry(histoArray[selection],"cut[1]","f");
+    }else if(selection==2 && (cut1==2||cut2==2)){
+      histoArray[selection]->Draw("same");
+      histoArray[selection]->SetFillColor(kYellow);
+      leg->AddEntry(histoArray[selection],"cut[2]","f");
+    }else if(selection==3 && (cut1==3||cut2==3)){
+      histoArray[selection]->Draw("same");
+      histoArray[selection]->SetFillColor(kRed);
+      leg->AddEntry(histoArray[selection],"cut[3]","f");
+    }else if(selection==4 && (cut1==4||cut2==4)){
+      histoArray[selection]->Draw("same");
+      histoArray[selection]->SetFillColor(kYellow);
+      leg->AddEntry(histoArray[selection],"cut[4]","f");
+
+    }else if(selection==5 && (cut1==5||cut2==5)){
+      histoArray[selection]->Draw("same");
+      histoArray[selection]->SetFillColor(kRed);
+      leg->AddEntry(histoArray[selection],"cut[5]");
+    }else if(selection==6 && (cut1==6||cut2==6)){
+      histoArray[selection]->Draw("same");
+      histoArray[selection]->SetFillColor(kYellow);
+      leg->AddEntry(histoArray[selection],"cut[6]","f");
+    }else if(selection==7 && (cut1==7||cut2==7)){
+      histoArray[selection]->Draw("same");
+      histoArray[selection]->SetFillColor(kRed);
+      leg->AddEntry(histoArray[selection],"cut[7]");
+    }else if(selection==8 && (cut1==8||cut2==8)){
+      histoArray[selection]->Draw("same");
+      histoArray[selection]->SetFillColor(kYellow);
+      leg->AddEntry(histoArray[selection],"cut[8]","f");
+    }
+    histoArray[selection]->SetXTitle(theXtitle.c_str());
+    histoArray[selection]->SetMinimum(0.9);
+  }
+  
+  string folder="plots";
+  leg->SetFillColor(0);
+  leg->Draw("same");
+  Ca0->SaveAs((folder+char_cut2+char_cut1+savedname+".png").c_str());
+  Ca0->Clear();
+}
+
+void binomialEfficiency2D(TH2F * numerator,TH2F * denominator,bool text2D,bool ptaxis){
+  if(!numerator) cout<<"numerator not found"<<endl;
+  if(!denominator) cout<<"denominator not found"<<endl;
+
+  TH2F * efficiency= (TH2F*) numerator->Clone("efficiency");
+  
+  efficiency->SetTitle("Efficiency");
+  
+  if(ptaxis){
+    efficiency->SetXTitle("p_{T} Lead (GeV)");
+    efficiency->SetYTitle("p_{T} Trail (GeV)");
+  }else{
+    efficiency->SetXTitle(denominator->GetXaxis()->GetTitle());
+    efficiency->SetYTitle(denominator->GetYaxis()->GetTitle());
+  }
+
+  float eff,err;
+  for(int i=0;i<=numerator->GetXaxis()->GetNbins();i++)
+    for(int j=0;j<=numerator->GetYaxis()->GetNbins();j++){
+      if(denominator->GetBinContent(i,j)!=0){
+	eff = numerator->GetBinContent(i,j)/denominator->GetBinContent(i,j);
+	err = sqrt(eff*(1-eff)/denominator->GetBinContent(i,j));
+	//if(err==0.)continue;
+	efficiency->SetBinContent(i,j,eff);
+	efficiency->SetBinError(i,j,err);
+	//cout<<i<<" "<<j<<" "<<eff<<"+/-"<<err<<endl;
+      }
+    }
+  if(text2D==true){
+    efficiency->Draw("colztextE");
+  }else{
+    efficiency->Draw("colz");
+  }
+}
+
+void Draw2D(string savedname,string theXtitle,string theYtitle,TFile * theFile,bool text2D){
+  TH2F * histoArray2D[9  ];
+  for(int selection=0;selection<9  ;selection++){ //Loop over the different histograms
+    //std::string histo = std::to_string(selection); THIS WORKS IN C++ BUT NOT IN CINT
+    char histo[20];
+    sprintf(histo,"%d",selection);
+    //cout<<savedname+"_"+histo<<endl;
+    histoArray2D[selection] = (TH2F*)(theFile->Get((savedname+"_"+histo).c_str()));
+    if(selection<9){
+      histoArray2D[selection]->SetXTitle(theXtitle.c_str());
+      histoArray2D[selection]->SetYTitle(theYtitle.c_str());
+      if(text2D){
+	histoArray2D[selection]->DrawNormalized("colztext");
+      }else{
+	histoArray2D[selection]->Draw("colz");
+      }
+      Ca0->SaveAs(("plots/"+savedname+"_"+histo+".png").c_str());
+      Ca0->Clear();
+    } 
+  }
+}
+
 void make_up(){
-  gROOT->Reset();
+  //  gROOT->Reset();
   //  gStyle->SetOptStat(1111);
   gStyle->SetOptStat(0);
   gStyle->SetPalette(1);
@@ -21,10 +191,10 @@ void make_up(){
   
   TFile * theFile = new TFile("output.root");
 
-  system("mkdir plots");
+  system("mkdir -p plots");
 
   //cout<<"creating canvas"<<endl;
-  TCanvas * Ca0 = new TCanvas("Ca0","bit0",1200,800);
+
   Ca0->cd();
 
   //turnon curve
@@ -632,218 +802,57 @@ void make_up(){
   Ca0->Clear();
   
   gStyle->SetPaintTextFormat("1.3f");
-  Draw2D("wide_pt1pt2","p_{T} Lead (GeV)","p_{T} Trail (GeV)","plots/",theFile,true);
-  Draw2D("phi1phi2","#phi_{Lead}","#phi_{Trail}","plots/",theFile,false);
-  Draw2D("eta1eta2","#eta_{Lead}","#eta_{Trail}","plots/",theFile,false);
-  Draw2D("pt1pt2","p_{T} Lead (GeV)","p_{T} Trail (GeV)","plots/",theFile,false);
-  Draw2D("pt1pt2Norm","p_{T} Lead / M_{#gamma #gamma}","p_{T} Trail / M_{#gamma #gamma}","plots/",theFile,false);
-  Draw2D("pt1pt2Zoom","p_{T} Lead / M_{#gamma #gamma}","p_{T} Trail / M_{#gamma #gamma}","plots/",theFile,false);
+  Draw2D("wide_pt1pt2","p_{T} Lead (GeV)","p_{T} Trail (GeV)",theFile,true);
+  Draw2D("phi1phi2","#phi_{Lead}","#phi_{Trail}",theFile,false);
+  Draw2D("eta1eta2","#eta_{Lead}","#eta_{Trail}",theFile,false);
+  Draw2D("pt1pt2","p_{T} Lead (GeV)","p_{T} Trail (GeV)",theFile,false);
+  Draw2D("pt1pt2Norm","p_{T} Lead / M_{#gamma #gamma}","p_{T} Trail / M_{#gamma #gamma}",theFile,false);
+  Draw2D("pt1pt2Zoom","p_{T} Lead / M_{#gamma #gamma}","p_{T} Trail / M_{#gamma #gamma}",theFile,false);
 
   
   cout<<"going for Draw1D"<<endl; 
-
+  
   int cut1=0;
   int cut2=1;
-  Draw1D("higgsEta","#eta_{H}","plots/",theFile,cut1,cut2);
-  Draw1D("higgsPhi","#phi_{H}","plots/",theFile,cut1,cut2);
-  Draw1D("higgsPt","p (GeV)","plots/",theFile,cut1,cut2);
-  Draw1D("higgsP","p (GeV)","plots/",theFile,cut1,cut2); 
-  Draw1D("diphoton_LeadR9","diphoton_LeadR9","plots/",theFile,cut1,cut2);
-  Draw1D("diphoton_SubLeadR9","diphoton_SubLeadR9","plots/",theFile,cut1,cut2);
+  Draw1D("higgsEta","#eta_{H}",theFile,cut1,cut2);
+  Draw1D("higgsPhi","#phi_{H}",theFile,cut1,cut2);
+  Draw1D("higgsPt","p (GeV)",theFile,cut1,cut2);
+  Draw1D("higgsP","p (GeV)",theFile,cut1,cut2); 
+  Draw1D("diphoton_LeadR9","diphoton_LeadR9",theFile,cut1,cut2);
+  Draw1D("diphoton_SubLeadR9","diphoton_SubLeadR9",theFile,cut1,cut2);
   
   for(cut1=1;cut1<=7;cut1=cut1+2){
     cut2=cut1+1;
-    Draw1D("higgsEta","#eta_{H}","plots/",theFile,cut1,cut2);
-    Draw1D("higgsPhi","#phi_{H}","plots/",theFile,cut1,cut2);
-    Draw1D("higgsPt","p (GeV)","plots/",theFile,cut1,cut2);
-    Draw1D("higgsP","p (GeV)","plots/",theFile,cut1,cut2); 
-    Draw1D("diphoton_LeadR9","diphoton_LeadR9","plots/",theFile,cut1,cut2);
-    Draw1D("diphoton_SubLeadR9","diphoton_SubLeadR9","plots/",theFile,cut1,cut2);
+    Draw1D("higgsEta","#eta_{H}",theFile,cut1,cut2);
+    Draw1D("higgsPhi","#phi_{H}",theFile,cut1,cut2);
+    Draw1D("higgsPt","p (GeV)",theFile,cut1,cut2);
+    Draw1D("higgsP","p (GeV)",theFile,cut1,cut2); 
+    Draw1D("diphoton_LeadR9","diphoton_LeadR9",theFile,cut1,cut2);
+    Draw1D("diphoton_SubLeadR9","diphoton_SubLeadR9",theFile,cut1,cut2);
   }
   
   Ca0->SetLogy();
 
-  int cut1=0;
-  int cut2=1;
-  Draw1D("ptLead","p_{T} Lead (GeV)","plots/",theFile,cut1,cut2); 
-  Draw1D("ptTrail","p_{T} Trail (GeV)","plots/",theFile,cut1,cut2);
-  Draw1D("ptLeadNorm","p_{T} Lead / M_{#gamma #gamma} ","plots/",theFile,cut1,cut2); 
-  Draw1D("ptTrailNorm","p_{T} Trail / M_{#gamma #gamma}","plots/",theFile,cut1,cut2);
-  Draw1D("massDiphoton","mass_{#gamma #gamma} (GeV)","plots/",theFile,cut1,cut2);
-  Draw1D("massHiggs","mass_{H} (GeV)","plots/",theFile,cut1,cut2);
+  cut1=0;
+  cut2=1;
+  Draw1D("ptLead","p_{T} Lead (GeV)",theFile,cut1,cut2); 
+  Draw1D("ptTrail","p_{T} Trail (GeV)",theFile,cut1,cut2);
+  Draw1D("ptLeadNorm","p_{T} Lead / M_{#gamma #gamma} ",theFile,cut1,cut2); 
+  Draw1D("ptTrailNorm","p_{T} Trail / M_{#gamma #gamma}",theFile,cut1,cut2);
+  Draw1D("massDiphoton","mass_{#gamma #gamma} (GeV)",theFile,cut1,cut2);
+  Draw1D("massHiggs","mass_{H} (GeV)",theFile,cut1,cut2);
 
   
   for(cut1=1;cut1<=7;cut1=cut1+2){
     cut2=cut1+1;
-    Draw1D("ptLead","p_{T} Lead (GeV)","plots/",theFile,cut1,cut2); 
-    Draw1D("ptTrail","p_{T} Trail (GeV)","plots/",theFile,cut1,cut2);
-    Draw1D("ptLeadNorm","p_{T} Lead / M_{#gamma #gamma} ","plots/",theFile,cut1,cut2); 
-    Draw1D("ptTrailNorm","p_{T} Trail / M_{#gamma #gamma}","plots/",theFile,cut1,cut2);
-    Draw1D("massDiphoton","mass_{#gamma #gamma} (GeV)","plots/",theFile,cut1,cut2);
-    Draw1D("massHiggs","mass_{H} (GeV)","plots/",theFile,cut1,cut2);
+    Draw1D("ptLead","p_{T} Lead (GeV)",theFile,cut1,cut2); 
+    Draw1D("ptTrail","p_{T} Trail (GeV)",theFile,cut1,cut2);
+    Draw1D("ptLeadNorm","p_{T} Lead / M_{#gamma #gamma} ",theFile,cut1,cut2); 
+    Draw1D("ptTrailNorm","p_{T} Trail / M_{#gamma #gamma}",theFile,cut1,cut2);
+    Draw1D("massDiphoton","mass_{#gamma #gamma} (GeV)",theFile,cut1,cut2);
+    Draw1D("massHiggs","mass_{H} (GeV)",theFile,cut1,cut2);
   }
   
   exit(0);
 }
-
-void binomialEfficiency1D(TH1F * numerator,TH1F * denominator,string option){
-  //  TH1F * efficiency = numerator->Clone("efficiency");
-  TGraphAsymmErrors * efficiency =new TGraphAsymmErrors(numerator,denominator);
-  efficiency->SetTitle("Efficiency");
-  efficiency->GetXaxis()->SetTitle(numerator->GetXaxis()->GetTitle());
-  efficiency->GetYaxis()->SetTitle("#epsilon");
-
-    
-  /*
-  for(int j=0;j<=numerator->GetXaxis()->GetNbins() ;j++){
-    if(denominator->GetBinContent(j)!=0){
-      float eff = numerator->GetBinContent(j)/denominator->GetBinContent(j);
-      float err = sqrt(eff*(1-eff)/denominator->GetBinContent(j));
-      //if(err==0.)continue;
-      efficiency->SetBinContent(j,eff);
-      efficiency->SetBinError(j,err);
-      //cout<<"1Deff "<<j<<" "<<eff<<" +/- "<<err<<endl;
-    }
-  }
-  */
-  
-  efficiency->Draw("AP");
-  efficiency->SetMarkerColor(kRed);
-  efficiency->SetMarkerStyle(23);
-  efficiency->SetMarkerSize(2);
-  if(option=="p") efficiency->GetXaxis()->SetRangeUser(0.,120.);
-  else if(option=="eta") efficiency->GetXaxis()->SetLimits(-5.,5.);
-  else if(option=="phi") efficiency->GetXaxis()->SetLimits(-3.1416,3.1416);
-  else if(option=="pn") efficiency->GetXaxis()->SetLimits(0.,1.);
-  else if(option=="m") efficiency->GetXaxis()->SetLimits(60.,180.);
-  
-  efficiency->GetYaxis()->SetRangeUser(0.,1.);
-
-  //efficiency->Delete();
-
-  //theFile->cd();
-  //efficiency->Write();
-}
-      
-void Draw1D(string savedname,string theXtitle,string folder,TFile * theFile,int cut1, int cut2){
-  
-  TLegend *leg = new TLegend(0.65,0.93,0.89,0.7);
-  
-  TH1F * histoArray[9  ];
-  for(int selection=0;selection<9  ;selection++){ //Loop over the different histograms
-    //std::string histo = std::to_string(selection);
-    char histo[20];
-    sprintf(histo,"%d",selection);
-    //cout<<savedname+"_"+histo<<endl;
-    char char_cut1[20];
-    char char_cut2[20];
-    sprintf(char_cut1,"%d",cut1);
-    sprintf(char_cut2,"%d",cut2);
-    histoArray[selection] = (TH1F*)(theFile->Get((savedname+"_"+histo).c_str()));
-    if(selection==0){
-      histoArray[selection]->Draw();
-      histoArray[selection]->SetFillColor(kBlue);
-      leg->AddEntry(histoArray[selection],"minitree","f");
-    }else if(selection==1 && (cut1==1||cut2==1)){
-      histoArray[selection]->Draw("same");
-      histoArray[selection]->SetFillColor(kRed);
-      leg->AddEntry(histoArray[selection],"cut[1]","f");
-    }else if(selection==2 && (cut1==2||cut2==2)){
-      histoArray[selection]->Draw("same");
-      histoArray[selection]->SetFillColor(kYellow);
-      leg->AddEntry(histoArray[selection],"cut[2]","f");
-    }else if(selection==3 && (cut1==3||cut2==3)){
-      histoArray[selection]->Draw("same");
-      histoArray[selection]->SetFillColor(kRed);
-      leg->AddEntry(histoArray[selection],"cut[3]","f");
-    }else if(selection==4 && (cut1==4||cut2==4)){
-      histoArray[selection]->Draw("same");
-      histoArray[selection]->SetFillColor(kYellow);
-      leg->AddEntry(histoArray[selection],"cut[4]","f");
-
-    }else if(selection==5 && (cut1==5||cut2==5)){
-      histoArray[selection]->Draw("same");
-      histoArray[selection]->SetFillColor(kRed);
-      leg->AddEntry(histoArray[selection],"cut[5]");
-    }else if(selection==6 && (cut1==6||cut2==6)){
-      histoArray[selection]->Draw("same");
-      histoArray[selection]->SetFillColor(kYellow);
-      leg->AddEntry(histoArray[selection],"cut[6]","f");
-    }else if(selection==7 && (cut1==7||cut2==7)){
-      histoArray[selection]->Draw("same");
-      histoArray[selection]->SetFillColor(kRed);
-      leg->AddEntry(histoArray[selection],"cut[7]");
-    }else if(selection==8 && (cut1==8||cut2==8)){
-      histoArray[selection]->Draw("same");
-      histoArray[selection]->SetFillColor(kYellow);
-      leg->AddEntry(histoArray[selection],"cut[8]","f");
-    }
-    histoArray[selection]->SetXTitle(theXtitle.c_str());
-    histoArray[selection]->SetMinimum(0.9);
-  }
-  
-  
-  leg->SetFillColor(0);
-  leg->Draw("same");
-  Ca0->SaveAs((folder+char_cut2+char_cut1+savedname+".png").c_str());
-  Ca0->Clear();
-}
-
-void binomialEfficiency2D(TH2F * numerator,TH2F * denominator,bool text2D,bool ptaxis){
-  if(!numerator) cout<<"numerator not found"<<endl;
-  if(!denominator) cout<<"denominator not found"<<endl;
-
-  TH1F * efficiency = numerator->Clone("efficiency");
-
-  efficiency->SetTitle("Efficiency");
-  
-  if(ptaxis){
-    efficiency->SetXTitle("p_{T} Lead (GeV)");
-    efficiency->SetYTitle("p_{T} Trail (GeV)");
-  }else{
-    efficiency->SetXTitle(denominator->GetXaxis()->GetTitle());
-    efficiency->SetYTitle(denominator->GetYaxis()->GetTitle());
-  }
-
-  float eff,err;
-  for(int i=0;i<=numerator->GetXaxis()->GetNbins();i++)
-    for(int j=0;j<=numerator->GetYaxis()->GetNbins();j++){
-      if(denominator->GetBinContent(i,j)!=0){
-	eff = numerator->GetBinContent(i,j)/denominator->GetBinContent(i,j);
-	err = sqrt(eff*(1-eff)/denominator->GetBinContent(i,j));
-	//if(err==0.)continue;
-	efficiency->SetBinContent(i,j,eff);
-	efficiency->SetBinError(i,j,err);
-	//cout<<i<<" "<<j<<" "<<eff<<"+/-"<<err<<endl;
-      }
-    }
-  if(text2D==true){
-    efficiency->Draw("colztextE");
-  }else{
-    efficiency->Draw("colz");
-  }
-}
-
-void Draw2D(string savedname,string theXtitle,string theYtitle,string folder,TFile * theFile,bool text2D){
-  TH2F * histoArray[9  ];
-  for(int selection=0;selection<9  ;selection++){ //Loop over the different histograms
-    //std::string histo = std::to_string(selection); THIS WORKS IN C++ BUT NOT IN CINT
-    char histo[20];
-    sprintf(histo,"%d",selection);
-    //cout<<savedname+"_"+histo<<endl;
-    histoArray[selection] = (TH2F*)(theFile->Get((savedname+"_"+histo).c_str()));
-    if(selection<9){
-      histoArray[selection]->SetXTitle(theXtitle.c_str());
-      histoArray[selection]->SetYTitle(theYtitle.c_str());
-      if(text2D){
-	histoArray[selection]->DrawNormalized("colztext");
-      }else{
-	histoArray[selection]->Draw("colz");
-      }
-      Ca0->SaveAs(("plots/"+savedname+"_"+histo+".png").c_str());
-      Ca0->Clear();
-    } 
-  }
-}
-
 

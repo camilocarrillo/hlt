@@ -11,7 +11,9 @@ do
 	~/hlt/scripts/execute_folder.sh $i > output.$i.txt &
 	echo "finishing $i in $j"
     done
-    echo "sleeping 30s"
+    echo "sleeping 60s"
+    export jobs=`ps aux | grep miloc | grep root | grep execute | wc -l`
+    echo "jobs running : $jobs"
     sleep 60s
 done
 
