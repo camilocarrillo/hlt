@@ -8,12 +8,14 @@ float efficiency(TFile * theFile){
   if(!theFile) return -1;
   TH1F * numerator = (TH1F*) (theFile->Get("higgsP_6"));
   TH1F * denominator = (TH1F*) (theFile->Get("higgsP_5"));
+  if(!numerator||!denominator)return -1;
   return numerator->Integral()/denominator->Integral();
 }
 
 float error(TFile * theFile){
   if(!theFile) return 0;
   TH1F * denominator = (TH1F*) (theFile->Get("higgsEta_5"));
+  if(!denominator)return 0;
   float eff = efficiency(theFile);
   return sqrt(eff*(1-eff)/denominator->Integral()); 
 }

@@ -118,7 +118,7 @@ void Draw1D(string savedname,string theXtitle,TFile * theFile,int cut1, int cut2
     histoArray[selection]->SetMinimum(0.9);
   }
   
-  string folder="plots";
+  string folder="plots/";
   leg->SetFillColor(0);
   leg->Draw("same");
   Ca0->SaveAs((folder+char_cut2+char_cut1+savedname+".png").c_str());
